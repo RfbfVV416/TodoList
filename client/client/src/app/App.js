@@ -14,6 +14,8 @@ import Alert from "react-s-alert";
 import "react-s-alert/dist/s-alert-default.css";
 import "react-s-alert/dist/s-alert-css-effects/slide.css";
 import "./App.css";
+import TaskComponent from "../components/TaskComponent";
+import TodoList from "../create/TodoList";
 
 class App extends Component {
   constructor(props) {
@@ -73,19 +75,34 @@ class App extends Component {
         </div>
         <div className="app-body">
           <Switch>
-            <Route exact path="/" component={Home}></Route>
+            <Route
+                exact path="/" component={Home}>
+            </Route>
             <PrivateRoute
               path="/profile"
               authenticated={this.state.authenticated}
               currentUser={this.state.currentUser}
-              component={Profile}
-            ></PrivateRoute>
+              component={Profile}>
+            </PrivateRoute>
             <Route
               path="/login"
-              render={props => <Login authenticated={this.state.authenticated} {...props} />}
-            ></Route>
-            <Route path="/oauth2/redirect" component={OAuth2RedirectHandler}></Route>
-            <Route component={NotFound}></Route>
+              render={props => <Login authenticated={this.state.authenticated} {...props} />}>
+            </Route>
+            <Route
+                path="/test"
+                render={props => <TaskComponent authenticated={this.state.authenticated} {...props} />}>
+            </Route>
+            <Route
+                path="/oauth2/redirect" component={OAuth2RedirectHandler}>
+            </Route>
+            <Route
+                path="/create" authenticated={this.state.authenticated} component={TodoList}>
+            </Route>
+            <Route
+                component={NotFound}>
+            </Route>
+
+
           </Switch>
         </div>
         <Alert stack={{ limit: 3 }} timeout={3000} position="top-right" effect="slide" offset={65} />

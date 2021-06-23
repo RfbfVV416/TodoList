@@ -35,7 +35,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         } catch (AuthenticationException ex) {
             throw ex;
         } catch (Exception ex) {
-            // Throwing an instance of AuthenticationException will trigger the OAuth2AuthenticationFailureHandler
             throw new InternalAuthenticationServiceException(ex.getMessage(), ex.getCause());
         }
     }

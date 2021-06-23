@@ -11,12 +11,12 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_DB=postgres
     volumes:
-      - pg_project:/var/lib/postgresql/data
+      - C:\Users\bebes\IdeaProjects\todolist_login\server\todolist\pg_project:/var/lib/postgresql/data
     ports:
       - "5432:5432"
 
   pgadmin:
-    container_name: pgadmin4_container3
+    container_name: pgadmin4_container4
     image: dpage/pgadmin4
     restart: always
     environment:

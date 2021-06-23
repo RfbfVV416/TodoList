@@ -32,3 +32,19 @@ export function getCurrentUser() {
     method: "GET"
   });
 }
+
+
+export function getAllUsers() {
+  if (!localStorage.getItem(ACCESS_TOKEN)) {
+    return Promise.reject("No access token set.");
+  }
+
+  return request({
+    url: API_BASE_URL + "/user/all",
+    method: "GET"
+  });
+}
+
+
+
+

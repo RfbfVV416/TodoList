@@ -9,7 +9,7 @@ class AppHeader extends Component {
         <div className="container">
           <div className="app-branding">
             <Link to="/" className="app-title">
-              React Login
+              Todo List
             </Link>
           </div>
           <div className="app-options">
@@ -17,6 +17,8 @@ class AppHeader extends Component {
               {this.props.authenticated ? (
                 <ul>
                   <li>
+                    <NavLink to="/test">Test</NavLink>
+                    <NavLink to="/create">Create task</NavLink>
                     <a onClick={this.props.onLogout}>Logout</a>
                   </li>
                 </ul>

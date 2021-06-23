@@ -23,34 +23,34 @@ class Login extends Component {
   render() {
     if (this.props.authenticated) {
       return (
-        <Redirect
-          to={{
-            pathname: "/",
-            state: { from: this.props.location }
-          }}
-        />
+          <Redirect
+              to={{
+                pathname: "/",
+                state: { from: this.props.location }
+              }}
+          />
       );
     }
 
-    return (
+  return (
       <div className="login-container">
         <div className="login-content">
-          <h1 className="login-title">Login</h1>
-          <SampleLogin />
-        </div>
-      </div>
-    );
+        <h1 className="login-title">Login</h1>
+    <SampleLogin />
+  </div>
+  </div>
+  );
   }
 }
 
 class SampleLogin extends Component {
   render() {
     return (
-      <div className="social-login">
-        <a className="btn btn-block social-btn google" href={GOOGLE_AUTH_URL}>
-          <img src={googleLogo} alt="Google" /> Log in with Google
-        </a>
-      </div>
+        <div className="social-login">
+          <a className="btn btn-block social-btn google" href={GOOGLE_AUTH_URL}>
+            <img src={googleLogo} alt="Google" /> Log in with Google
+          </a>
+        </div>
     );
   }
 }
