@@ -1,7 +1,11 @@
 package com.spring.todolist.controller;
 
+import com.spring.todolist.repository.UserRepository;
+import com.spring.todolist.security.CurrentUser;
+import com.spring.todolist.security.UserPrincipal;
+import com.spring.todolist.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import com.spring.todolist.model.Category;
 import com.spring.todolist.model.Task;
@@ -12,41 +16,71 @@ import com.spring.todolist.repository.TaskRepository;
 @RestController
 @RequestMapping("/task")
 public class TaskController {
-    TaskRepository taskRepository;
+    private TaskRepository taskRepository;
+    private UserRepository userRepository;
+    private UserService userService;
+
 
     @Autowired
-    public TaskController(TaskRepository taskRepository) {
+    public TaskController(UserService userService, UserRepository userRepository, TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
+        this.userService = userService;
     }
 
+    //save current user task
     @PostMapping("/save")
-    Task save(@RequestBody Task task) {
-        return taskRepository.save(task);
+    @PreAuthorize("hasRole('USER')")
+    String save(@CurrentUser UserPrincipal userPrincipal, @RequestBody Task task) {
+
+        User user = userService.getUserById(userPrincipal.getId());
+        user.getTasks().add(task);
+        userRepository.save(user);
+        return task.getId();
     }
 
-    @DeleteMapping("/del/{id}")
-    void delete(@PathVariable String id) {
-        Task delTask = taskRepository.getOne(id);
-
-        for (Category category: delTask.getCategories()) {
-            for (Task task: category.getTasks()) {
-                if (delTask.getId().equals(task.getId())){
-                    category.getTasks().remove(task);
-                }
-            }
-        }
-        taskRepository.delete(delTask);
-    }
-
+    //get ALL current user tasks
     @GetMapping("/all")
-    Iterable<Task> all() {
-        return taskRepository.findAll();
+    @PreAuthorize("hasRole('USER')")
+    Iterable<Task> getAll(@CurrentUser UserPrincipal userPrincipal) {
+        User user = userService.getUserById(userPrincipal.getId());
+        return user.getTasks();
     }
 
-    @PutMapping("/update")
-    Task update(@RequestBody Task task) {
-        return taskRepository.save(task);
+    //get one current user current task
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('USER')")
+    Task getOne(@CurrentUser UserPrincipal userPrincipal, @PathVariable String id) {
+        User user = userService.getUserById(userPrincipal.getId());
+        return taskRepository.findByOwner(user.getId());
     }
+
+
+
+
+//    @DeleteMapping("/del/{id}")
+//    void delete(@PathVariable String id) {
+//        Task delTask = taskRepository.getOne(id);
+//
+//        for (Category category: delTask.getCategories()) {
+//            for (Task task: category.getTasks()) {
+//                if (delTask.getId().equals(task.getId())){
+//                    category.getTasks().remove(task);
+//                }
+//            }
+//        }
+//        taskRepository.delete(delTask);
+//    }
+
+//    @GetMapping("/all")
+//    Iterable<Task> all() {
+//        return taskRepository.findAll();
+//    }
+
+//    @PutMapping("/update")
+//    Task update(@RequestBody Task task) {
+//        return taskRepository.save(task);
+//    }
 
 
 

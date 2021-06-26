@@ -1,19 +1,13 @@
 package com.spring.todolist.model;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
-
+import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 
@@ -21,6 +15,8 @@ import java.util.Set;
 @Table(name = "task_model", schema="public")
 public class Task {
     @Id
+    @GeneratedValue(generator="system-uuid")
+    @GenericGenerator(name="system-uuid", strategy = "uuid")
     @Getter @Setter
     private String id;
     @Getter @Setter
@@ -35,9 +31,6 @@ public class Task {
     private Date creationDate;
     @Getter @Setter
     private Date lastModifiedDate;
-    @ManyToOne
-    @Getter @Setter
-    private User user;
     @ManyToMany(targetEntity = Category.class,
             cascade = {CascadeType.PERSIST, CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH} )
     @JoinTable(
@@ -46,6 +39,11 @@ public class Task {
             inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName="id"))
     @JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
     @Getter @Setter
-    private Set<Category> categories = new HashSet<>();
+    private Set<Category> categories;
+    @Getter @Setter
+    private String owner;
+
+
+
 
 }

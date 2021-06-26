@@ -33,8 +33,7 @@ public class TokenProvider {
     public String getUserIdFromToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(appConfig.getTokenSecret())
-                .parseClaimsJws(token)
-                .getBody();
+                .parseClaimsJws(token).getBody();
 
         return claims.getSubject();
     }
@@ -54,7 +53,7 @@ public class TokenProvider {
         } catch (IllegalArgumentException ex) {
             log.error("JWT claims string is empty.");
         }
-        return false;
+        return true;
     }
 
 }

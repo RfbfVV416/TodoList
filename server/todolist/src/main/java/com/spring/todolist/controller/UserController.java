@@ -35,27 +35,28 @@ public class UserController{
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
     }
 
-    @GetMapping("/user/all")
-    Iterable<User> all() {
-        return userRepository.findAll();
-    }
 
-    @GetMapping("/user/{id}")
-    User userById(@PathVariable String id) {
-        return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND));
-    }
+//    @GetMapping("/user/all")
+//    Iterable<User> all() {
+//        return userRepository.findAll();
+//    }
 
-    @PostMapping("/user/save")
-    User save(@RequestBody User user) {
-        return userRepository.save(user);
-    }
-
-    @DeleteMapping("/user/del/{id}")
-    void delete(@PathVariable String id) {
-        userRepository.delete(userRepository.getOne(id));
-    }
-
-    @PutMapping("/user/update")
-    User update(@RequestBody User user){ return userRepository.save(user);}
+//    @GetMapping("/user/{id}")
+//    User userById(@PathVariable String id) {
+//        return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(
+//                HttpStatus.NOT_FOUND));
+//    }
+//
+//    @PostMapping("/user/save")
+//    User save(@RequestBody User user) {
+//        return userRepository.save(user);
+//    }
+//
+//    @DeleteMapping("/user/del/{id}")
+//    void delete(@PathVariable String id) {
+//        userRepository.delete(userRepository.getOne(id));
+//    }
+//
+//    @PutMapping("/user/update")
+//    User update(@RequestBody User user){ return userRepository.save(user);}
 }
