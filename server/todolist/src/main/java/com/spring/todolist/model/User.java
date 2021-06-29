@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -37,12 +38,12 @@ public class User {
     @JoinColumn(name= "owner", referencedColumnName = "id")
     @JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
     @Getter @Setter
-    private Set<Task> tasks;
+    private Set<Task> tasks = new HashSet<>();
     @Getter @Setter
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner", referencedColumnName = "id")
     @JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
-    private Set<Category> categories;
+    private Set<Category> categories = new HashSet<>();
 
 }
 

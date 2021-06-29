@@ -1,89 +1,57 @@
 package com.spring.todolist.controller;
 
-import com.spring.todolist.repository.UserRepository;
+
 import com.spring.todolist.security.CurrentUser;
 import com.spring.todolist.security.UserPrincipal;
-import com.spring.todolist.service.UserService;
+import com.spring.todolist.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import com.spring.todolist.model.Category;
 import com.spring.todolist.model.Task;
-import com.spring.todolist.model.User;
-import com.spring.todolist.repository.TaskRepository;
 
 
 @RestController
 @RequestMapping("/task")
 public class TaskController {
-    private TaskRepository taskRepository;
-    private UserRepository userRepository;
-    private UserService userService;
 
+    private final TaskService taskService;
 
     @Autowired
-    public TaskController(UserService userService, UserRepository userRepository, TaskRepository taskRepository) {
-        this.taskRepository = taskRepository;
-        this.userRepository = userRepository;
-        this.userService = userService;
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
-    //save current user task
     @PostMapping("/save")
     @PreAuthorize("hasRole('USER')")
-    String save(@CurrentUser UserPrincipal userPrincipal, @RequestBody Task task) {
-
-        User user = userService.getUserById(userPrincipal.getId());
-        user.getTasks().add(task);
-        userRepository.save(user);
-        return task.getId();
+    ResponseEntity<Object> save(@CurrentUser UserPrincipal userPrincipal, @RequestBody Task task) {
+        return taskService.save(userPrincipal, task);
     }
 
-    //get ALL current user tasks
+
     @GetMapping("/all")
     @PreAuthorize("hasRole('USER')")
-    Iterable<Task> getAll(@CurrentUser UserPrincipal userPrincipal) {
-        User user = userService.getUserById(userPrincipal.getId());
-        return user.getTasks();
+    ResponseEntity<Object>  getAll(@CurrentUser UserPrincipal userPrincipal) {
+        return taskService.getAll(userPrincipal);
     }
 
-    //get one current user current task
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('USER')")
-    Task getOne(@CurrentUser UserPrincipal userPrincipal, @PathVariable String id) {
-        User user = userService.getUserById(userPrincipal.getId());
-        return taskRepository.findByOwner(user.getId());
+    ResponseEntity<Object> getOne(@CurrentUser UserPrincipal userPrincipal, @PathVariable String id) {
+        return taskService.getOne(userPrincipal, id);
     }
 
+    @PutMapping(path="/update/{id}", produces= "application/json")
+    @PreAuthorize("hasRole('USER')")
+    ResponseEntity<Object> update(@CurrentUser UserPrincipal userPrincipal, @RequestBody Task task, @PathVariable String id) {
+        return taskService.update(userPrincipal, task, id);
+    }
 
-
-
-//    @DeleteMapping("/del/{id}")
-//    void delete(@PathVariable String id) {
-//        Task delTask = taskRepository.getOne(id);
-//
-//        for (Category category: delTask.getCategories()) {
-//            for (Task task: category.getTasks()) {
-//                if (delTask.getId().equals(task.getId())){
-//                    category.getTasks().remove(task);
-//                }
-//            }
-//        }
-//        taskRepository.delete(delTask);
-//    }
-
-//    @GetMapping("/all")
-//    Iterable<Task> all() {
-//        return taskRepository.findAll();
-//    }
-
-//    @PutMapping("/update")
-//    Task update(@RequestBody Task task) {
-//        return taskRepository.save(task);
-//    }
-
-
-
+    @DeleteMapping("/del/{id}")
+    @PreAuthorize("hasRole('USER')")
+    ResponseEntity<Object> delete(@CurrentUser UserPrincipal userPrincipal, @PathVariable String id) {
+        return taskService.delete(userPrincipal, id);
+    }
 
 
 }

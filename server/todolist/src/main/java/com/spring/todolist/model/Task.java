@@ -8,6 +8,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -20,7 +21,7 @@ public class Task {
     @Getter @Setter
     private String id;
     @Getter @Setter
-    private String description;
+    private String input;
     @Getter @Setter
     private String title;
     @Getter @Setter
@@ -39,7 +40,7 @@ public class Task {
             inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName="id"))
     @JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
     @Getter @Setter
-    private Set<Category> categories;
+    private Set<Category> categories = new HashSet<>();
     @Getter @Setter
     private String owner;
 

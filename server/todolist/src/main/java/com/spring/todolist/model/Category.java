@@ -7,6 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -24,7 +25,7 @@ public class Category {
             cascade = {CascadeType.PERSIST, CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH} )
     @JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
     @Getter @Setter
-    private Set<Task> tasks;
+    private Set<Task> tasks = new HashSet<>();
     @Getter @Setter
     private String owner;
 
