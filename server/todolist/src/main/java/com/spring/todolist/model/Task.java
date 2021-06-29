@@ -40,7 +40,7 @@ public class Task {
             inverseJoinColumns = @JoinColumn(name = "category_id", referencedColumnName="id"))
     @JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
     @Getter @Setter
-    private Set<Category> categories = new HashSet<>();
+    private Set<Category> categories;
     @Getter @Setter
     private String owner;
 

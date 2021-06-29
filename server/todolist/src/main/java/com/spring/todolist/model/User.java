@@ -38,12 +38,12 @@ public class User {
     @JoinColumn(name= "owner", referencedColumnName = "id")
     @JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
     @Getter @Setter
-    private Set<Task> tasks = new HashSet<>();
+    private Set<Task> tasks;
     @Getter @Setter
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner", referencedColumnName = "id")
     @JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
-    private Set<Category> categories = new HashSet<>();
+    private Set<Category> categories;
 
 }
 

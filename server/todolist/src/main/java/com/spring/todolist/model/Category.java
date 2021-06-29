@@ -25,7 +25,7 @@ public class Category {
             cascade = {CascadeType.PERSIST, CascadeType.DETACH,CascadeType.MERGE,CascadeType.REFRESH} )
     @JsonIdentityInfo(generator= ObjectIdGenerators.IntSequenceGenerator.class, property="@id")
     @Getter @Setter
-    private Set<Task> tasks = new HashSet<>();
+    private Set<Task> tasks;
     @Getter @Setter
     private String owner;
 
