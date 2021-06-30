@@ -1,6 +1,7 @@
 package com.spring.todolist.service;
 
 
+import com.spring.todolist.mapper.TaskMapperImpl;
 import com.spring.todolist.model.Task;
 import com.spring.todolist.repository.TaskRepository;
 import com.spring.todolist.security.CurrentUser;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -23,41 +25,30 @@ public class TaskService {
     /**save user's task*/
     public ResponseEntity<Object> save(@CurrentUser UserPrincipal userPrincipal, @RequestBody Task task){
         task.setOwner(userPrincipal.getId());
-        Task savedTask = taskRepository.save(task);
-        if (taskRepository.findById(savedTask.getId()).isPresent()){
-            return ResponseEntity.status(HttpStatus.OK).body(task);
-        }
-        else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to save Task");
+        taskRepository.save(task);
+        return ResponseEntity.status(HttpStatus.OK).body(task.getId());
     }
 
-    /**get all current user's tasks*/
+    /**get all tasks for user*/
     public ResponseEntity<Object> getAll(@CurrentUser UserPrincipal userPrincipal){
         return ResponseEntity.status(HttpStatus.OK).body(taskRepository.findByOwner(userPrincipal.getId()));
     }
 
-    /**get one current user's task*/
+    /**get one task for user*/
     public ResponseEntity<Object> getOne(@CurrentUser UserPrincipal userPrincipal, @PathVariable String id){
-        if (taskRepository.findByIdAndOwner(id, userPrincipal.getId()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.OK).body(taskRepository.findByIdAndOwner(id, userPrincipal.getId()));
-        }
-        else return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Specified Task not found");
+        Optional<Task> task = taskRepository.findByIdAndOwner(id, userPrincipal.getId());
+        return task.<ResponseEntity<Object>>map(value -> ResponseEntity.status(HttpStatus.OK).body(value)).orElseGet(()
+                -> ResponseEntity.status(HttpStatus.NOT_FOUND).body("Specified Task not found"));
     }
 
     /**update user's task*/
     public ResponseEntity<Object> update(@CurrentUser UserPrincipal userPrincipal, @RequestBody Task task, @PathVariable String id){
-        if (taskRepository.findByIdAndOwner(id, userPrincipal.getId()).isPresent()){
-            Task newTask = taskRepository.findByIdAndOwner(id, userPrincipal.getId()).get();
-            newTask.setInput(task.getInput());
-            newTask.setTitle(task.getTitle());
-            newTask.setStatus(task.getStatus());
-            newTask.setCreationDate(task.getCreationDate());
-            newTask.setLastModifiedDate(task.getLastModifiedDate());
-            newTask.setCategories(task.getCategories());
-            Task savedTask = taskRepository.save(newTask);
-            if (taskRepository.findById(savedTask.getId()).isPresent()) {
-                return ResponseEntity.status(HttpStatus.ACCEPTED).body("Task was updated successfully");
-            }
-            else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to update Task");
+       Optional<Task> oldTask = taskRepository.findByIdAndOwner(id, userPrincipal.getId());
+        if (oldTask.isPresent()){
+            TaskMapperImpl taskMapper = new TaskMapperImpl();
+            Task newTask = taskMapper.taskToTask(task, oldTask.get());
+            taskRepository.save(newTask);
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body("Task was updated successfully");
         }
         else return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Specified Task not found");
     }
@@ -67,20 +58,9 @@ public class TaskService {
     public ResponseEntity<Object> delete(@CurrentUser UserPrincipal userPrincipal, @PathVariable String id) {
         if (taskRepository.findByIdAndOwner(id, userPrincipal.getId()).isPresent()) {
             taskRepository.deleteByIdAndOwner(id, userPrincipal.getId());
-            if (taskRepository.findByIdAndOwner(id, userPrincipal.getId()).isPresent()){
-                return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to Delete the specified Task");
-            }
-            else return ResponseEntity.status(HttpStatus.OK).body("Task was deleted successfully");
+            return ResponseEntity.status(HttpStatus.OK).body("Task was deleted successfully");
         }
         else return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Specified Task not found");
     }
-
-
-
-
-
-
-
-
 
 }

@@ -12,8 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -25,14 +25,11 @@ public class CategoryService {
     /**save user's new category*/
     public ResponseEntity<Object> save(@CurrentUser UserPrincipal userPrincipal, @RequestBody Category category){
         category.setOwner(userPrincipal.getId());
-        Category savedCategory = categoryRepository.save(category);
-        if(categoryRepository.findById(savedCategory.getId()).isPresent()){
-            return ResponseEntity.status(HttpStatus.OK).body(category);
-        }
-        else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to save Category");
+        categoryRepository.save(category);
+        return ResponseEntity.status(HttpStatus.OK).body(category);
     }
 
-    /**get all current user's categories*/
+    /**get all categories for user*/
     public ResponseEntity<Object> getAll(@CurrentUser UserPrincipal userPrincipal){
         return ResponseEntity.status(HttpStatus.OK).body(categoryRepository.findByOwner(userPrincipal.getId()));
     }
@@ -40,17 +37,11 @@ public class CategoryService {
     /**delete user's category*/
     @Transactional
     public ResponseEntity<Object> delete(@CurrentUser UserPrincipal userPrincipal, @PathVariable String id) {
-        if (categoryRepository.findByIdAndOwner(id, userPrincipal.getId()).isPresent()){
-            if (categoryRepository.getOne(id).getTasks().size() == 0){
-                categoryRepository.deleteByIdAndOwner(id, userPrincipal.getId());
-                if (categoryRepository.findByIdAndOwner(id, userPrincipal.getId()).isPresent()){
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to Delete the specified Category");
-                }
-                else return ResponseEntity.status(HttpStatus.OK).body("Category was deleted successfully");
-            }
-            else return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to delete,  Please delete all tasks associated with this category");
+        Optional<Category> category = categoryRepository.findByIdAndOwner(id, userPrincipal.getId());
+        if (category.isPresent()){
+            categoryRepository.deleteByIdAndOwner(id, userPrincipal.getId());
+            return ResponseEntity.status(HttpStatus.OK).body("Category was deleted successfully");
         }
         else return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Specified Category not found");
     }
-
 }

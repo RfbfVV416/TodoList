@@ -24,37 +24,11 @@ public class UserController{
         this.userRepository = userRepository;
     }
 
-
     @GetMapping("/profile")
     @PreAuthorize("hasRole('USER')")
     public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
         return userRepository.findById(userPrincipal.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userPrincipal.getId()));
     }
-
-
-//    @GetMapping("/user/all")
-//    Iterable<User> all() {
-//        return userRepository.findAll();
-//    }
-
-//    @GetMapping("/user/{id}")
-//    User userById(@PathVariable String id) {
-//        return userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(
-//                HttpStatus.NOT_FOUND));
-//    }
-//
-//    @PostMapping("/user/save")
-//    User save(@RequestBody User user) {
-//        return userRepository.save(user);
-//    }
-//
-//    @DeleteMapping("/user/del/{id}")
-//    void delete(@PathVariable String id) {
-//        userRepository.delete(userRepository.getOne(id));
-//    }
-//
-//    @PutMapping("/user/update")
-//    User update(@RequestBody User user){ return userRepository.save(user);}
 
 }

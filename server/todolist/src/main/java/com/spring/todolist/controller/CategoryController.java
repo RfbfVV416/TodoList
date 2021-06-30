@@ -5,6 +5,7 @@ import com.spring.todolist.security.CurrentUser;
 import com.spring.todolist.security.UserPrincipal;
 import com.spring.todolist.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +39,11 @@ public class CategoryController {
     @PreAuthorize("hasRole('USER')")
     ResponseEntity<Object> delete(@CurrentUser UserPrincipal userPrincipal, @PathVariable String id) {
         return categoryService.delete(userPrincipal, id);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Object> handleException(Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
 }

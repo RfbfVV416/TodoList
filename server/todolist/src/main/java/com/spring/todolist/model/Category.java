@@ -5,14 +5,12 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
-import java.util.HashSet;
 import java.util.Set;
 
 
 @Entity
-@Table(name = "category_model", schema="public")
+@Table(name = "category_model", schema="public", indexes = @Index(columnList = "owner"))
 public class Category {
     @Id
     @GeneratedValue(generator="system-uuid")
@@ -28,5 +26,11 @@ public class Category {
     private Set<Task> tasks;
     @Getter @Setter
     private String owner;
+    @PreRemove
+    private void removeCategoriesFromTasks() {
+        for (Task t : tasks) {
+            t.getCategories().remove(this);
+        }
+    }
 
 }

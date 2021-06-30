@@ -5,15 +5,13 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
-
 import javax.persistence.*;
 import java.sql.Date;
-import java.util.HashSet;
 import java.util.Set;
 
 
 @Entity
-@Table(name = "task_model", schema="public")
+@Table(name = "task_model", schema="public", indexes = @Index(columnList = "owner"))
 public class Task {
     @Id
     @GeneratedValue(generator="system-uuid")
